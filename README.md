@@ -24,4 +24,4 @@ Stucture of the Image Directory in the end
 - cohort 2
 - cohort 3
 
-#Feel free to delete intermediate processing folders after checking the correct final product that is the npy images
+#Intermediate processing folders can be deleted after checking the correct final product that is the npy images
