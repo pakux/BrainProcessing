@@ -11,7 +11,7 @@ Preprocessing for Brain sMRI steps included:
   - skull-stripps registered niftiis and saves into nifti_deskull folder
 ### 4. Tensor transformations
 - npy_transforms.py includes cropping and normalization and creation of npy tensors
-
+- python npy_transforms.py --cohort ixi --img_size 180 --input_folder /data/input --output_folder /data/output
 ## Expected Directory Structure
 Stucture of the Image Directory in the end          
 - cohort 1
