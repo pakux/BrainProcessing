@@ -49,8 +49,8 @@ if __name__ == "__main__":
     args = parse_args()
 
     # Auto-define input/output folders if not explicitly passed
-    input_folder = args.input_folder or f'{path}/images/nifti_deskull/'
-    output_folder = args.output_folder or f'{path}/images/{args.cohort}/npy_{args.cohort}{args.img_size}/'
+    input_folder = args.input_folder or f'{your_path}/images/nifti_deskull/'
+    output_folder = args.output_folder or f'{your_path}/images/{args.cohort}/npy_{args.cohort}{args.img_size}/'
     
     os.makedirs(output_folder, exist_ok=True)
 
