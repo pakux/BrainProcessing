@@ -1,5 +1,5 @@
 # BrainProcessing
-Preprocessing for Brain sMRI steps included:
+Preprocessing for Brain sMRI:
 ## Steps
 ### 1. Extracting dcms
 - extract_zip.py creates a structured dcm_raw folder after extracting downloaded data contained in zips
