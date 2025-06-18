@@ -16,11 +16,28 @@ Preprocessing for Brain sMRI steps included:
 Stucture of the Image Directory in the end          
 - cohort 1
   - dcm_cmprs
+    - batch1.zip
+    - batch2.zip
+    - ..   
   - dcm_raw
+    - {eid1}
+      - xx1.dcm
+      - xx2.dcm
+      - ..
+    - {eid2}
+    - ..
   - nifti_raw
+    - {eid1}.nii.gz
+    - ..
   - nifti_reg
+    - {eid1}_registered.nii.gz
+    - ..
   - nifti_deskull
-  - npy_cohort180 
+    - {eid1}_deskulled.nii.gz
+    - ..
+  - npy_cohort180
+    - {eid1}.npy
+    - ..
 - cohort 2
 - cohort 3
 
