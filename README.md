@@ -13,7 +13,7 @@ Preprocessing for Brain sMRI steps included:
 - npy_transforms.py includes cropping and normalization and creation of npy tensors
 
 ## Expected Directory Structure
-Stucture of the Image Directory in the end: #Feel free to delete intermediate processing folders after checking the correct final product that is the npy images
+Stucture of the Image Directory in the end          #Feel free to delete intermediate processing folders after checking the correct final product that is the npy images
 - cohort 1
   - dcm_cmprs
   - dcm_raw
