@@ -14,7 +14,8 @@ Preprocessing for Brain sMRI:
 - python npy_transforms.py --cohort ixi --img_size 180 --input_folder /data/input --output_folder /data/output
 ## Data Layout  
 
-All datasets live under a top-level `images/` directory. Each cohort has its own subdirectory.
+All datasets live under a top-level `images/` directory outside the preprocessing code in image_processing directory which should preferably be parallel to image directory but not inside. 
+Each cohort has its own subdirectory for images at different preprocessing steps.
 
 <details>
 <summary>Click to expand directory tree</summary>
