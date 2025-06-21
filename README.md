@@ -22,7 +22,7 @@ Each cohort has its own subdirectory for images at different preprocessing steps
 
 ```text
 images/
-├── cohort_name1/
+├── {cohort1}/
 │   ├── dcm_cmprs/
 │   │   ├── batch1.zip
 │   │   ├── batch2.zip
@@ -42,15 +42,16 @@ images/
 │   ├── nifti_deskull/
 │   │   ├── {eid1}_deskulled.nii.gz
 │   │   └── ...
-│   ├── npy_cohort180/
+│   ├── npy_{cohort1}180/
 │   │   ├── {eid1}.npy
 │   │   └── ...
-├── cohort_name2/
-├── cohort_name3/
+├── {cohort2}/
+├── {cohort3}/...
 ```
 
 </details>
 
-
+Tips:
+1. Create npy
 
 #Intermediate processing folders can be deleted after checking the correct final product that is the npy images
