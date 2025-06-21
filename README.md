@@ -17,8 +17,7 @@ Preprocessing for Brain sMRI:
 All datasets live under a top-level `images/` directory outside the preprocessing code in image_processing directory which should preferably be parallel to image directory but not inside. 
 Each cohort has its own subdirectory for images at different preprocessing steps.
 
-<details>
-<summary>Click to expand directory tree</summary>
+Data Tree
 
 ```text
 images/
@@ -49,9 +48,9 @@ images/
 ├── {cohort3}/...
 ```
 
-</details>
 
-### Tips:
+
+### Tips
 - You can create npy_{cohort1}96 directory too, to test run with smaller images first. Give img_size=96 to npy_transforms.py that will downsize the 3D images using torchio.
 - Delete the registered niftii folder later if you have verified that all were correctly registered, in case you want to save space.
 - Different registering techniques can also be tried, for example, set reg_path as a new nifti_reg_nlin folder to save nonlinear registration and set 'SyN' as the Ants registration parameter.
