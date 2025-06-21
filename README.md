@@ -14,7 +14,7 @@ Preprocessing for Brain sMRI:
 - python npy_transforms.py --cohort ixi --img_size 180 --input_folder /data/input --output_folder /data/output
 ## Expected Directory Structure
 Stucture of the Image Directory in the end          
-- cohort 1
+- cohort_name1
   - dcm_cmprs
     - batch1.zip
     - batch2.zip
@@ -38,7 +38,7 @@ Stucture of the Image Directory in the end
   - npy_cohort180
     - {eid1}.npy
     - ..
-- cohort 2
-- cohort 3
+- cohort_name2
+- cohort_name3
 
 #Intermediate processing folders can be deleted after checking the correct final product that is the npy images
