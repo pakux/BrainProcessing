@@ -33,13 +33,17 @@ images/
 │   │   │   └── ...
 │   │   └── {eid2}/
 │   ├── nifti_raw/
-│   │   └── {eid1}.nii.gz
+│   │   ├── {eid1}.nii.gz
+│   │   └── ...
 │   ├── nifti_reg/
-│   │   └── {eid1}_registered.nii.gz
+│   │   ├── {eid1}_registered.nii.gz
+│   │   └── ...
 │   ├── nifti_deskull/
-│   │   └── {eid1}_deskulled.nii.gz
+│   │   ├── {eid1}_deskulled.nii.gz
+│   │   └── ...
 │   ├── npy_cohort180/
-│   │   └── {eid1}.npy
+│   │   ├── {eid1}.npy
+│   │   └── ...
 ├── cohort_name2/
 ├── cohort_name3/
 ```
