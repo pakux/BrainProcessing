@@ -12,10 +12,14 @@ Preprocessing for Brain sMRI:
 ### 4. Tensor transformations
 - npy_transforms.py includes cropping and normalization and creation of npy tensors
 - python npy_transforms.py --cohort ixi --img_size 180 --input_folder /data/input --output_folder /data/output
-## Data Layout
-You should have a directory only to store images, outside the image_processing folder where you store preprocessing scripts. 
-Stucture of the Image Directory in the end    
+## Data Layout  
 
+All datasets live under a top-level `images/` directory. Each cohort has its own subdirectory.
+
+<details>
+<summary>Click to expand directory tree</summary>
+
+```text
 images/
 ├── cohort_name1/
 │   ├── dcm_cmprs/
@@ -27,25 +31,20 @@ images/
 │   │   │   ├── xx1.dcm
 │   │   │   ├── xx2.dcm
 │   │   │   └── ...
-│   │   ├── {eid2}/
-│   │   └── ...
+│   │   └── {eid2}/
 │   ├── nifti_raw/
-│   │   ├── {eid1}.nii.gz
-│   │   └── ...
+│   │   └── {eid1}.nii.gz
 │   ├── nifti_reg/
-│   │   ├── {eid1}_registered.nii.gz
-│   │   └── ...
+│   │   └── {eid1}_registered.nii.gz
 │   ├── nifti_deskull/
-│   │   ├── {eid1}_deskulled.nii.gz
-│   │   └── ...
+│   │   └── {eid1}_deskulled.nii.gz
 │   ├── npy_cohort180/
-│   │   ├── {eid1}.npy
-│   │   └── ...
-│   └── ...
+│   │   └── {eid1}.npy
 ├── cohort_name2/
-│   └── ...
-└── cohort_name3/
-    └── ...
+├── cohort_name3/
+```
+
+</details>
 
 
 
