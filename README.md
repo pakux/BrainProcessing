@@ -51,7 +51,7 @@ images/
 
 </details>
 
-Tips:
+### Tips:
 - You can create npy_{cohort1}96 directory too, to test run with smaller images first. Give img_size=96 to npy_transforms.py that will downsize the 3D images using torchio.
 - Delete the registered niftii folder later if you have verified that all were correctly registered, in case you want to save space.
 - Different registering techniques can also be tried, for example, set reg_path as a new nifti_reg_nlin folder to save nonlinear registration and set 'SyN' as the Ants registration parameter.
