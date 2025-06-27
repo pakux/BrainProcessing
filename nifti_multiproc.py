@@ -8,6 +8,7 @@ from functools import partial
 # === Config ===
 cohort = 'adni1-sc'
 reg_type= 'Affine'
+gpu_id = 'cuda:0'
 input_folder = f'/images/{cohort}/nifti_raw/'
 n4_folder = f'/images/{cohort}/nifti_n4/'
 reg_folder = f'/images/{cohort}/nifti_reg_{reg_type}/'
@@ -83,7 +84,7 @@ def deskull_single(file_name, gpu_id):
         return
 
     try:
-        command = f'hd-bet -i {input_path} -o {output_path} -device cuda:0'
+        command = f'hd-bet -i {input_path} -o {output_path} -device {gpu_id}'
         subprocess.run(command, shell=True, check=True)
         print(f"[DONE] Deskulled {file_name} on GPU {gpu_id}")
     except subprocess.CalledProcessError as e:
@@ -107,5 +108,5 @@ if __name__ == "__main__":
     all_files = [f for f in os.listdir(reg_folder) if f.endswith('_registered.nii.gz')]
 
     for f in all_files:
-        deskull_single(f, gpu_id=0)
+        deskull_single(f, gpu_id)
 
