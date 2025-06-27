@@ -6,27 +6,53 @@ import multiprocessing as mp
 from functools import partial
 
 # === Config ===
-# Add necessary variables here
-input_folder = f'{path}/images/{cohort}/nifti_raw/'
-reg_folder = f'{path}/images/{cohort}/nifti_reg_nlin/'
-deskull_folder = f'{path}/images/{cohort}/nifti_deskull_nlin/'
-csv_path = f'{path}/data/{cohort}/{csv_name}.csv'
-template_path = "{path}/images/templates/mni_icbm152_nlin_asym_09c/mni_icbm152_pd_tal_nlin_asym_09c.nii"
+cohort = 'adni1-sc'
+reg_type= 'Affine'
+input_folder = f'/images/{cohort}/nifti_raw/'
+n4_folder = f'/images/{cohort}/nifti_n4/'
+reg_folder = f'/images/{cohort}/nifti_reg_{reg_type}/'
+deskull_folder = f'/images/{cohort}/nifti_deskull_{reg_type}/'
+csv_path = f'/data/{cohort}/ad-cn.csv'
+template_path = "/images/templates/mni_icbm152_nlin_asym_09c/mni_icbm152_t1_tal_nlin_asym_09c.nii"
 
 # === Load template and EIDs ===
 fixed = ants.image_read(template_path)
 df = pd.read_csv(csv_path, dtype={'eid': str})
-eids = df['eid'].tolist()[:1000]
+eids = df['eid'].tolist()
+#eids = sorted(set(f.split('_')[0] for f in os.listdir(input_folder) if f.endswith('.nii') or f.endswith('.nii.gz')))[:10]
 
-# === Registration ===
-def register_single(eid):
+
+def bias_correct_single(eid):
     try:
         matched_files = [f for f in os.listdir(input_folder) if f.startswith(eid + '_') and f.endswith('.nii.gz')]
         if not matched_files:
-            print(f"[SKIP] No file found for {eid}")
+            print(f"[SKIP] No input for {eid}")
             return
         input_file = matched_files[0]
         input_path = os.path.join(input_folder, input_file)
+
+        output_file = input_file.replace('.nii.gz', '_n4.nii.gz')
+        output_path = os.path.join(n4_folder, output_file)
+
+        if os.path.exists(output_path):
+            print(f"[SKIP] {eid} already bias corrected.")
+            return
+
+        print(f"[INFO] N4 correcting {eid}")
+        img = ants.image_read(input_path)
+        corrected = ants.n4_bias_field_correction(img)
+        ants.image_write(corrected, output_path)
+        print(f"[DONE] Bias corrected {eid}")
+    except Exception as e:
+        print(f"[ERROR] Bias correcting {eid}: {e}")
+
+def register_single(eid):
+    try:
+        matched_files = [f for f in os.listdir(n4_folder) if f.startswith(eid + '_') and f.endswith('_n4.nii.gz')]
+        if not matched_files:
+            print(f"[SKIP] No N4 image for {eid}")
+            return
+        input_path = os.path.join(n4_folder, matched_files[0])
 
         output_file = f"{eid}_registered.nii.gz"
         output_path = os.path.join(reg_folder, output_file)
@@ -37,7 +63,7 @@ def register_single(eid):
 
         print(f"[INFO] Registering {eid}")
         moving = ants.image_read(input_path)
-        reg = ants.registration(fixed=fixed, moving=moving, type_of_transform='SyN')
+        reg = ants.registration(fixed=fixed, moving=moving, type_of_transform=reg_type)
         ants.image_write(reg['warpedmovout'], output_path)
         print(f"[DONE] {eid}")
     except Exception as e:
@@ -57,7 +83,7 @@ def deskull_single(file_name, gpu_id):
         return
 
     try:
-        command = f'hd-bet -i {input_path} -o {output_path} -device cuda:{gpu_id}'
+        command = f'hd-bet -i {input_path} -o {output_path} -device cuda:0'
         subprocess.run(command, shell=True, check=True)
         print(f"[DONE] Deskulled {file_name} on GPU {gpu_id}")
     except subprocess.CalledProcessError as e:
@@ -65,18 +91,21 @@ def deskull_single(file_name, gpu_id):
 
 # === Run ===
 if __name__ == "__main__":
+    os.makedirs(n4_folder, exist_ok=True)
     os.makedirs(reg_folder, exist_ok=True)
     os.makedirs(deskull_folder, exist_ok=True)
 
-    print("=== Starting nonlinear registration ===")
+    print("=== Starting N4 bias correction ===")
+    with mp.Pool(processes=4) as pool:
+        pool.map(bias_correct_single, eids)
+
+    print("=== Starting registration ===")
     with mp.Pool(processes=4) as pool:  
         pool.map(register_single, eids)
 
-    print("=== Starting deskulling on 2 GPUs ===")
+    print("=== Starting deskulling sequentially on GPU 0 ===")
     all_files = [f for f in os.listdir(reg_folder) if f.endswith('_registered.nii.gz')]
-    gpu0_files = all_files[::2]
-    gpu1_files = all_files[1::2]
 
-    # Run deskulling on both GPUs in parallel
-    with mp.Pool(processes=2) as pool:
-        pool.starmap(deskull_single, [(f, 0) for f in gpu0_files] + [(f, 1) for f in gpu1_files])
+    for f in all_files:
+        deskull_single(f, gpu_id=0)
+
