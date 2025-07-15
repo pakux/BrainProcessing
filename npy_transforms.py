@@ -40,7 +40,7 @@ def process_nifti_files(root_dir, npy_folder, transforms):
 if __name__ == "__main__":
     args = parse_args()
 
-    input_folder = args.input_folder or f'../images/{args.cohort}/nifti_deskull_Affine/'
+    input_folder = args.input_folder or f'../images/{args.cohort}/nifti_deskull/'
     output_folder = args.output_folder or f'../images/{args.cohort}/npy{args.img_size}/'
     os.makedirs(output_folder, exist_ok=True)
 
