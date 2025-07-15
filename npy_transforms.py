@@ -1,66 +1,61 @@
-#%%
 import os
 import argparse
 import torchio as tio
 import numpy as np
-import nibabel as nib
-import torch 
-import matplotlib.pyplot as plt
+import torch
 
 #%%
 def parse_args():
-    parser = argparse.ArgumentParser(description="Convert NIfTI to .npy with TorchIO preprocessing")
-    parser.add_argument('--img_size', type=int, default=180, help='Image size for cropping/padding (default: 180)')
+    parser = argparse.ArgumentParser(description="Preprocess NIfTI to .npy: Resample, Crop, Resize, Normalize")
+    parser.add_argument('--img_size', type=int, default=96, help='Final output image size (default: 96)')
+    parser.add_argument('--crop_size', type=int, default=180, help='Crop size before resizing (default: 180)')
     parser.add_argument('--cohort', type=str, required=True, help='Cohort name (e.g., ukb, ppmi)')
-    parser.add_argument('--input_folder', type=str, default=None, help='Path to input .nii.gz files')
-    parser.add_argument('--output_folder', type=str, default=None, help='Path to save .npy files')
+    parser.add_argument('--input_folder', type=str, default=None, help='Input folder with .nii.gz files')
+    parser.add_argument('--output_folder', type=str, default=None, help='Output folder for .npy files')
     return parser.parse_args()
 
 #%%
-def transform_and_save_npy(nii_path, output_path, crop, norm):
-    img = nib.load(nii_path)
-    data = img.get_fdata()
-    tensor_data = torch.tensor(data).unsqueeze(0)
-    crop_data = crop(tensor_data)
-    norm_data = norm(crop_data).squeeze(0)
-    np.save(output_path, norm_data)
+def transform_and_save_npy(nii_path, output_path, transforms):
+    subject = tio.Subject(img=tio.ScalarImage(nii_path))
+    subject = transforms(subject)
+    data = subject.img.data.squeeze(0).numpy()  # Remove channel dimension
+    np.save(output_path, data)
 
 #%%
-def process_nifti_files(root_dir, npy_folder, crop, norm):
-    file_names = []
-    nii_files = [file for file in os.listdir(root_dir) if file.endswith('_deskulled.nii.gz')]
-
+def process_nifti_files(root_dir, npy_folder, transforms):
+    nii_files = [f for f in os.listdir(root_dir) if f.endswith('_deskulled.nii.gz')]
     for nii_file in nii_files:
         nii_path = os.path.join(root_dir, nii_file)
-        npy_file = nii_file.replace("_deskulled.nii.gz", "") + '.npy'
+        npy_file = nii_file.replace('_deskulled.nii.gz', '') + '.npy'
         output_path = os.path.join(npy_folder, npy_file)
 
         if os.path.exists(output_path):
-            print(f'Skipping {npy_file} as it exists')
-            file_names.append(os.path.splitext(npy_file)[0])
+            print(f"Skipping {npy_file}, already exists.")
             continue
 
-        transform_and_save_npy(nii_path, output_path, crop, norm)
-        print(output_path)
-        file_names.append(os.path.splitext(npy_file)[0])
+        transform_and_save_npy(nii_path, output_path, transforms)
+        print(f"Saved: {output_path}")
 
 #%%
 if __name__ == "__main__":
     args = parse_args()
 
-    # Auto-define input/output folders if not explicitly passed
-    input_folder = args.input_folder or f'{your_path}/images/nifti_deskull/'
-    output_folder = args.output_folder or f'{your_path}/images/{args.cohort}/npy_{args.cohort}{args.img_size}/'
-    
+    input_folder = args.input_folder or f'../images/{args.cohort}/nifti_deskull_Affine/'
+    output_folder = args.output_folder or f'../images/{args.cohort}/npy{args.img_size}/'
     os.makedirs(output_folder, exist_ok=True)
 
-    # Define transforms
-    crop = tio.CropOrPad((args.img_size, args.img_size, args.img_size))
-    norm = tio.transforms.ZNormalization()
+    # Full transform pipeline
+    transforms = tio.Compose([
+        tio.Resample((1, 1, 1)),  # Resample to 1mm isotropic
+        tio.CropOrPad((args.crop_size, args.crop_size, args.crop_size)),  # Crop/Pad to 180³
+        tio.Resize((args.img_size, args.img_size, args.img_size)),  # Downscale to 96³
+        tio.ZNormalization()  # Normalize intensity
+    ])
 
-    # Process and save files
-    process_nifti_files(input_folder, output_folder, crop, norm)
+    # Process
+    process_nifti_files(input_folder, output_folder, transforms)
 
-    # Count .npy files
+    # Report
     npy_count = len([f for f in os.listdir(output_folder) if f.endswith('.npy')])
-    print(f"Total number of .npy files in {output_folder}: {npy_count}")
+    print(f"Total .npy files in {output_folder}: {npy_count}")
+
