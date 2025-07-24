@@ -6,7 +6,8 @@ Preprocessing for Brain sMRI:
 ### 2. Dcm to niftii conversion 
 - dcm2nii.sh converts structured dcms to niftiis  #if you already have a BIDS-structured dcm_raw folder 
 ### 3. Nifti preprocessing 
-- nifti_processing.py 
+- nifti_processing.py
+  - bias corrects registered images and saves into nifti_n4 folder  
   - registers raw niftiis and saves into nifti_reg folder 
   - skull-stripps registered niftiis and saves into nifti_deskull folder
 ### 4. Tensor transformations
