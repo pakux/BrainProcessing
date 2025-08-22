@@ -6,12 +6,13 @@ Preprocessing for Brain sMRI:
 ### 2. Dcm to niftii conversion 
 - dcm2nii.sh converts structured dcms to niftiis  #if you already have a BIDS-structured dcm_raw folder 
 ### 3. Nifti preprocessing 
-- nifti_processing.py 
+- nifti_processing.py
+  - bias corrects registered images and saves into nifti_n4 folder  
   - registers raw niftiis and saves into nifti_reg folder 
   - skull-stripps registered niftiis and saves into nifti_deskull folder
 ### 4. Tensor transformations
 - npy_transforms.py includes cropping and normalization and creation of npy tensors
-- python npy_transforms.py --cohort ixi --img_size 180 --input_folder /data/input --output_folder /data/output
+- python npy_transforms.py --cohort ixi --crop_size 180 --img_size 96 --input_folder /data/input --output_folder /data/output
 ## Data Layout  
 
 All datasets live under a top-level `images/` directory outside the preprocessing code in image_processing directory which should preferably be parallel to image directory but not inside. 
